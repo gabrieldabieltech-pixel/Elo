@@ -196,3 +196,31 @@ export async function resetarSenhaAluno(empresaId: string) {
 
   return { success: true, credentials: { username: empresa.criadoPor.username, password } };
 }
+
+export async function aprovarAluno(id: string) {
+  if (!(await verifyAdmin())) return { success: false, error: "Acesso negado" };
+  try {
+    await prisma.user.update({ where: { id }, data: { status: "APROVADO", ativo: true } });
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (e) { return { success: false }; }
+}
+
+export async function rejeitarAluno(id: string) {
+  if (!(await verifyAdmin())) return { success: false, error: "Acesso negado" };
+  try {
+    await prisma.user.update({ where: { id }, data: { status: "REJEITADO", ativo: false } });
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (e) { return { success: false }; }
+}
+
+export async function excluirAluno(id: string) {
+  if (!(await verifyAdmin())) return { success: false, error: "Acesso negado" };
+  try {
+    await prisma.empresa.updateMany({ where: { criadoPorId: id }, data: { criadoPorId: null } });
+    await prisma.user.delete({ where: { id } });
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (e) { return { success: false }; }
+}

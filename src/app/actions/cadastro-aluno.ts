@@ -48,10 +48,6 @@ export async function submitAutocadastro(dadosAluno: any, dadosEmpresa: any) {
     return { error: "Nome de usuário já está em uso." };
   }
 
-  if (await checkAlunoBloqueado(alunoNomeFormatado)) {
-    return { error: "Você já enviou seu cadastro. Fale com o professor para corrigir ou refazer." };
-  }
-
   if (await checkEmpresaBloqueada(empresaNomeFormatado)) {
     return { error: "Essa empresa já foi cadastrada por outro colega. Escolha outra empresa." };
   }

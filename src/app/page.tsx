@@ -60,11 +60,18 @@ export default async function HomePage({
               </Link>
             </>
           ) : (
-            <Link href="/admin">
-              <Button variant="outline" size="sm" className="flex min-h-[44px]">
-                Painel
-              </Button>
-            </Link>
+            <>
+              <Link href="/cadastro-empresa">
+                <Button variant="outline" size="sm" className="flex min-h-[44px]">
+                  + Nova Empresa
+                </Button>
+              </Link>
+              <Link href="/admin">
+                <Button variant="ghost" size="sm" className="flex min-h-[44px]">
+                  Painel
+                </Button>
+              </Link>
+            </>
           )}
         </div>
       </div>

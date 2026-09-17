@@ -149,9 +149,11 @@ export default function AutocadastroClient() {
       )}
 
       {step === 2 && credentials && (
-        <div className="bg-success/10 p-6 rounded-xl border border-success text-center space-y-4">
-          <h2 className="text-2xl text-success font-bold">Cadastro Concluído!</h2>
-          <p className="text-text-primary">Sua conta foi criada e a empresa foi enviada para aprovação.</p>
+        <div className="bg-warning/10 p-6 rounded-xl border border-warning text-center space-y-4">
+          <h2 className="text-2xl text-warning font-bold">Cadastro em Análise!</h2>
+          <p className="text-text-primary">
+            Seu cadastro foi enviado para análise. Guarde seu usuário e senha — o acesso será liberado após a aprovação.
+          </p>
           <div className="bg-surface p-5 rounded-lg mt-4 border border-border inline-block text-left w-full max-w-sm">
             <p className="text-sm text-text-secondary mb-3 font-medium">Credenciais de Acesso (SALVE AGORA!):</p>
             <div className="space-y-2">

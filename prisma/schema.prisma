@@ -21,15 +21,16 @@ enum StatusCadastro {
 }
 
 model User {
-  id           String    @id @default(cuid())
+  id           String         @id @default(cuid())
   nome         String
-  email        String    @unique
-  username     String    @unique
+  email        String         @unique
+  username     String         @unique
   senha        String
-  role         Role      @default(COLABORADOR)
-  ativo        Boolean   @default(true)
-  criadoEm     DateTime  @default(now())
-  atualizadoEm DateTime  @updatedAt
+  role         Role           @default(COLABORADOR)
+  ativo        Boolean        @default(true)
+  status       StatusCadastro @default(PENDENTE)
+  criadoEm     DateTime       @default(now())
+  atualizadoEm DateTime       @updatedAt
   empresas     Empresa[]
 }
 

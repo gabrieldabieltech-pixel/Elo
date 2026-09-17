@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma"
 import { AdminEmpresasTable } from "./AdminEmpresasTable"
+import { AdminAlunosTable } from "./AdminAlunosTable"
 import { requireAuth } from "@/lib/server-auth"
 import { ConfigTelefone } from "./ConfigTelefone"
 
@@ -21,6 +22,45 @@ export default async function AdminDashboardPage({
 
   const take = 25
   const skip = (page - 1) * take
+
+  const adminPhoneConfig = await prisma.appConfig.findUnique({ where: { key: "ADMIN_PHONE" } })
+  const telefoneInicial = adminPhoneConfig?.value || ""
+  const pendingCount = await prisma.empresa.count({ where: { status: 'PENDENTE', deletadoEm: null } })
+
+  if (tab === "ALUNOS") {
+    const whereAlunos: any = { role: "ALUNO" }
+    if (q) {
+      whereAlunos.nome = { contains: q, mode: "insensitive" }
+    }
+    const [alunos, total] = await Promise.all([
+      prisma.user.findMany({
+        where: whereAlunos,
+        orderBy: { criadoEm: 'desc' },
+        skip,
+        take,
+        include: { _count: { select: { empresas: true } } }
+      }),
+      prisma.user.count({ where: whereAlunos })
+    ])
+
+    return (
+      <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-[family-name:var(--font-display)] font-semibold text-text-primary">
+              Gestão de Alunos
+            </h1>
+          </div>
+          <ConfigTelefone telefoneInicial={telefoneInicial} />
+        </div>
+        <AdminAlunosTable 
+          alunos={alunos as any} 
+          total={total}
+          pendingCount={pendingCount}
+        />
+      </div>
+    )
+  }
 
   // Determine Prisma where clause
   const where: any = {}
@@ -44,7 +84,7 @@ export default async function AdminDashboardPage({
     where.estado = estado
   }
 
-  const [empresas, total, pendingCount, adminPhoneConfig] = await Promise.all([
+  const [empresas, total] = await Promise.all([
     prisma.empresa.findMany({
       where,
       orderBy: { criadoEm: 'desc' },
@@ -53,16 +93,16 @@ export default async function AdminDashboardPage({
       include: {
         funcoes: {
           select: { nome: true }
+        },
+        criadoPor: {
+          select: { id: true, nome: true, username: true }
         }
       }
     }),
-    prisma.empresa.count({ where }),
-    prisma.empresa.count({ where: { status: 'PENDENTE', deletadoEm: null } }),
-    prisma.appConfig.findUnique({ where: { key: "ADMIN_PHONE" } })
+    prisma.empresa.count({ where })
   ])
 
   const totalPages = Math.ceil(total / take)
-  const telefoneInicial = adminPhoneConfig?.value || "";
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">

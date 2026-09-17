@@ -28,10 +28,10 @@ export default function LoginForm() {
     });
 
     if (res?.error) {
-      setError("E-mail ou senha incorretos");
+      setError(res.error);
       setLoading(false);
     } else {
-      router.push("/admin");
+      router.push("/");
       router.refresh();
     }
   };

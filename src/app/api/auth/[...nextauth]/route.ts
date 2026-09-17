@@ -34,6 +34,14 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Usuário ou senha incorretos");
           }
 
+          if (user.status === "PENDENTE") {
+            throw new Error("Seu cadastro ainda está em análise.");
+          }
+
+          if (user.status === "REJEITADO") {
+            throw new Error("Seu cadastro foi rejeitado.");
+          }
+
           const isValid = await bcrypt.compare(password, user.senha);
           if (!isValid) {
             throw new Error("Usuário ou senha incorretos");
@@ -45,10 +53,11 @@ export const authOptions: NextAuthOptions = {
             username: user.username,
             role: user.role,
           };
-        } catch (error: unknown) {
+        } catch (error: any) {
           if (
-            error instanceof Error &&
-            error.message === "Usuário ou senha incorretos"
+            error.message === "Usuário ou senha incorretos" ||
+            error.message === "Seu cadastro ainda está em análise." ||
+            error.message === "Seu cadastro foi rejeitado."
           ) {
             throw error;
           }
