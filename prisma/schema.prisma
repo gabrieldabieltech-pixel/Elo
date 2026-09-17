@@ -11,6 +11,7 @@ datasource db {
 enum Role {
   ADMIN
   COLABORADOR
+  ALUNO
 }
 
 enum StatusCadastro {
@@ -54,4 +55,9 @@ model Funcao {
   id       String    @id @default(cuid())
   nome     String    @unique
   empresas Empresa[]
+}
+
+model AppConfig {
+  key   String @id
+  value String
 }

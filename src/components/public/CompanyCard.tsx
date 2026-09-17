@@ -12,6 +12,7 @@ type Empresa = {
   email: string | null
   telefone: string | null
   funcoes: { nome: string }[]
+  criadoPor?: { nome: string } | null
 }
 
 export function CompanyCard({ empresa }: { empresa: Empresa }) {
@@ -25,6 +26,11 @@ export function CompanyCard({ empresa }: { empresa: Empresa }) {
         <h3 className="text-xl font-bold font-[family-name:var(--font-display)] text-text-primary mb-2">
           {empresa.nome}
         </h3>
+        {empresa.criadoPor && (
+          <p className="text-xs text-primary mb-3 font-medium bg-primary/10 inline-block px-2 py-1 rounded">
+            Cadastrado por: {empresa.criadoPor.nome}
+          </p>
+        )}
         
         <div className="flex items-start text-sm text-text-secondary mb-4 gap-2">
           <MapPin size={16} className="mt-0.5 shrink-0" />

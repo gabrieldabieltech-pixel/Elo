@@ -162,3 +162,13 @@ export async function editarEmpresa(id: string, formData: FormData) {
     return { success: false, error: "Erro ao editar empresa." };
   }
 }
+
+export async function salvarTelefoneAdmin(telefone: string) {
+  if (!(await verifyAdmin())) return { success: false, error: "Acesso negado" };
+  await prisma.appConfig.upsert({
+    where: { key: "ADMIN_PHONE" },
+    update: { value: telefone },
+    create: { key: "ADMIN_PHONE", value: telefone }
+  });
+  return { success: true };
+}

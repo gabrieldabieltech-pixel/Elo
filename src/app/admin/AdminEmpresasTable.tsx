@@ -33,7 +33,8 @@ export function AdminEmpresasTable({
   currentTab,
   searchQ,
   searchCidade,
-  searchEstado
+  searchEstado,
+  pendingCount
 }: { 
   empresas: Empresa[], 
   total: number, 
@@ -42,7 +43,8 @@ export function AdminEmpresasTable({
   currentTab: string,
   searchQ: string,
   searchCidade: string,
-  searchEstado: string
+  searchEstado: string,
+  pendingCount?: number
 }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -142,7 +144,7 @@ export function AdminEmpresasTable({
   }
 
   const tabs = [
-    { id: 'PENDENTE', label: 'Pendentes' },
+    { id: 'PENDENTE', label: pendingCount !== undefined && pendingCount > 0 ? `Pendentes (${pendingCount})` : 'Pendentes' },
     { id: 'APROVADO', label: 'Aprovadas' },
     { id: 'REJEITADO', label: 'Rejeitadas' },
     { id: 'EXCLUIDAS', label: 'Excluídas' },
@@ -189,6 +191,20 @@ export function AdminEmpresasTable({
         onConfirm={handleBulkAction}
         variant={bulkAction === 'aprovar' ? "primary" : "warning"}
       />
+
+      {/* Ações de Aluno */}
+      <div className="flex justify-end mb-2">
+        <Button onClick={() => {
+          const tel = prompt("Digite o WhatsApp do aluno com DDD (ex: 11999999999):");
+          if (tel) {
+            const link = `https://elo-nexo-loc.vercel.app/cadastro-aluno`;
+            const msg = `Olá! Segue o link para cadastrar sua empresa no projeto: ${link}`;
+            window.open(`https://wa.me/55${tel.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`, "_blank");
+          }
+        }}>
+          Gerar Link / Convidar Aluno
+        </Button>
+      </div>
 
       {/* Tabs */}
       <div className="flex space-x-1 border-b border-border">

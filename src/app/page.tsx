@@ -57,6 +57,9 @@ export default async function HomePage({
       include: {
         funcoes: {
           select: { nome: true }
+        },
+        criadoPor: {
+          select: { nome: true }
         }
       },
       take

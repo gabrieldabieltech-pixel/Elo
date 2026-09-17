@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma"
 import { AdminEmpresasTable } from "./AdminEmpresasTable"
 import { requireAuth } from "@/lib/server-auth"
+import { ConfigTelefone } from "./ConfigTelefone"
 
 export const dynamic = "force-dynamic"
 
@@ -43,7 +44,7 @@ export default async function AdminDashboardPage({
     where.estado = estado
   }
 
-  const [empresas, total] = await Promise.all([
+  const [empresas, total, pendingCount, adminPhoneConfig] = await Promise.all([
     prisma.empresa.findMany({
       where,
       orderBy: { criadoEm: 'desc' },
@@ -55,20 +56,26 @@ export default async function AdminDashboardPage({
         }
       }
     }),
-    prisma.empresa.count({ where })
+    prisma.empresa.count({ where }),
+    prisma.empresa.count({ where: { status: 'PENDENTE', deletadoEm: null } }),
+    prisma.appConfig.findUnique({ where: { key: "ADMIN_PHONE" } })
   ])
 
   const totalPages = Math.ceil(total / take)
+  const telefoneInicial = adminPhoneConfig?.value || "";
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-[family-name:var(--font-display)] font-semibold text-text-primary">
-          Gestão de Empresas
-        </h1>
-        <p className="text-text-secondary mt-1">
-          Aprove, edite ou remova cadastros recebidos no portal.
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-[family-name:var(--font-display)] font-semibold text-text-primary">
+            Gestão de Empresas
+          </h1>
+          <p className="text-text-secondary mt-1">
+            Aprove, edite ou remova cadastros recebidos no portal.
+          </p>
+        </div>
+        <ConfigTelefone telefoneInicial={telefoneInicial} />
       </div>
 
       <AdminEmpresasTable 
@@ -80,6 +87,7 @@ export default async function AdminDashboardPage({
         searchQ={q}
         searchCidade={cidade}
         searchEstado={estado}
+        pendingCount={pendingCount}
       />
     </div>
   )
