@@ -1,0 +1,124 @@
+@import "tailwindcss" source("./");
+
+@theme {
+  --font-sans: "Inter", "Arial", "Helvetica", sans-serif;
+  --font-display: "Poppins", "Arial", "Helvetica", sans-serif;
+
+  /* Superfícies */
+  --color-app-bg: var(--app-background);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-muted: var(--surface-muted);
+
+  /* Texto */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  /* Bordas */
+  --color-border: var(--border);
+
+  /* Primário (azul) */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-focus-ring: var(--focus-ring);
+
+  /* Terracota (destaque) */
+  --color-terracota: var(--terracota);
+  --color-terracota-soft: var(--terracota-soft);
+
+  /* Semânticos */
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  /* Inputs */
+  --color-input-background: var(--input-background);
+  --color-input-border: var(--input-border);
+
+  /* Overlay */
+  --color-overlay: var(--overlay);
+  --color-shadow-color: var(--shadow-color);
+}
+
+/* ── Paleta Elo ── */
+:root {
+  /* Primário — azul */
+  --primary: #185FA5;
+  --primary-hover: #134D87;
+  --primary-active: #0F3D6C;
+  --primary-soft: #E8F0F8;
+  --primary-foreground: #FFFFFF;
+  --focus-ring: rgba(24, 95, 165, 0.3);
+
+  /* Terracota — destaque */
+  --terracota: #993C1D;
+  --terracota-soft: #F8EDE8;
+
+  /* Superfícies */
+  --app-background: #F5F7FA;
+  --surface: #FFFFFF;
+  --surface-elevated: #F8FAFB;
+  --surface-muted: #F1F4F7;
+
+  /* Texto */
+  --text-primary: #20211F;
+  --text-secondary: #5F6B66;
+
+  /* Bordas */
+  --border: #DCE1E6;
+
+  /* Inputs */
+  --input-background: #FFFFFF;
+  --input-border: #DCE1E6;
+
+  /* Overlay */
+  --overlay: rgba(32, 33, 31, 0.4);
+  --shadow-color: rgba(0, 0, 0, 0.05);
+
+  /* Semânticos */
+  --success: #10B981;
+  --success-soft: #D1FAE5;
+  --warning: #F59E0B;
+  --warning-soft: #FEF3C7;
+  --danger: #EF4444;
+  --danger-soft: #FEE2E2;
+  --info: #185FA5;
+  --info-soft: #E8F0F8;
+}
+
+/* ── Estilos globais ── */
+body {
+  background: var(--app-background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Acessibilidade: foco visível */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+/* Fix para select nativo */
+option {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+
+/* Impressão */
+@media print {
+  html, body {
+    background: #ffffff !important;
+  }
+}

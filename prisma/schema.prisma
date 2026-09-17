@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  COLABORADOR
+}
+
+enum StatusCadastro {
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
+
+model User {
+  id           String    @id @default(cuid())
+  nome         String
+  email        String    @unique
+  username     String    @unique
+  senha        String
+  role         Role      @default(COLABORADOR)
+  ativo        Boolean   @default(true)
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  empresas     Empresa[]
+}
+
+model Empresa {
+  id           String         @id @default(cuid())
+  nome         String
+  endereco     String
+  cidade       String
+  estado       String
+  whatsapp     String?
+  email        String?
+  telefone     String?
+  funcoes      Funcao[]
+  status       StatusCadastro @default(PENDENTE)
+  criadoPorId  String?
+  criadoPor    User?          @relation(fields: [criadoPorId], references: [id])
+  criadoEm     DateTime       @default(now())
+  atualizadoEm DateTime       @updatedAt
+  deletadoEm   DateTime?
+}
+
+model Funcao {
+  id       String    @id @default(cuid())
+  nome     String    @unique
+  empresas Empresa[]
+}

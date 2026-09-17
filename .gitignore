@@ -1,0 +1,30 @@
+# Dependências
+node_modules/
+
+# Build do Next.js
+.next/
+out/
+
+# Variáveis secretas
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Permitir somente o arquivo de exemplo
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
