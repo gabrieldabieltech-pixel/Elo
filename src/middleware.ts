@@ -7,14 +7,18 @@ export default withAuth(
     const path = req.nextUrl.pathname;
 
     if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
+      const loginUrl = req.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      return NextResponse.redirect(loginUrl);
     }
 
     const role = token.role as string;
 
     // /admin — somente ADMIN
     if (path.startsWith("/admin") && role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/", req.url));
+      const homeUrl = req.nextUrl.clone();
+      homeUrl.pathname = "/";
+      return NextResponse.redirect(homeUrl);
     }
 
     return NextResponse.next();
