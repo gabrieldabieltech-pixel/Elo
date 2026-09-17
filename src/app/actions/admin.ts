@@ -172,3 +172,27 @@ export async function salvarTelefoneAdmin(telefone: string) {
   });
   return { success: true };
 }
+
+import bcrypt from "bcryptjs";
+
+export async function resetarSenhaAluno(empresaId: string) {
+  if (!(await verifyAdmin())) return { success: false, error: "Acesso negado" };
+  const empresa = await prisma.empresa.findUnique({
+    where: { id: empresaId },
+    include: { criadoPor: true }
+  });
+
+  if (!empresa || !empresa.criadoPor) {
+    return { success: false, error: "Aluno no encontrado para esta empresa." };
+  }
+
+  const password = Math.floor(100000 + Math.random() * 900000).toString();
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await prisma.user.update({
+    where: { id: empresa.criadoPor.id },
+    data: { senha: hashedPassword }
+  });
+
+  return { success: true, credentials: { username: empresa.criadoPor.username, password } };
+}

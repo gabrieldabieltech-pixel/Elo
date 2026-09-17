@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/Input"
 import { Select } from "@/components/ui/Select"
 import { Checkbox } from "@/components/ui/Checkbox"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
-import { aprovarEmpresa, rejeitarEmpresa, excluirEmpresa, restaurarEmpresa, aprovarEmpresasBatch, rejeitarEmpresasBatch } from "@/app/actions/admin"
+import { aprovarEmpresa, rejeitarEmpresa, excluirEmpresa, restaurarEmpresa, aprovarEmpresasBatch, rejeitarEmpresasBatch, resetarSenhaAluno } from "@/app/actions/admin"
 import { toast, Toaster } from "react-hot-toast"
-import { Check, X, Trash2, Edit, RotateCcw, Search } from "lucide-react"
+import { Check, X, Trash2, Edit, RotateCcw, Search, Key } from "lucide-react"
 import Link from "next/link"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { ESTADOS_BRASIL } from "@/lib/validations"
@@ -23,6 +23,7 @@ type Empresa = {
   criadoEm: Date
   deletadoEm: Date | null
   funcoes: { nome: string }[]
+  criadoPor?: { id: string; nome: string } | null
 }
 
 export function AdminEmpresasTable({ 
@@ -54,6 +55,7 @@ export function AdminEmpresasTable({
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
   const [bulkAction, setBulkAction] = React.useState<'aprovar' | 'rejeitar' | null>(null)
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null) // specific ID or 'bulk'
+  const [credentialsModal, setCredentialsModal] = React.useState<{username: string, password: string} | null>(null)
 
   // Reset selection when changing tabs/pages
   React.useEffect(() => {
@@ -104,17 +106,34 @@ export function AdminEmpresasTable({
       else result = await rejeitarEmpresasBatch(ids);
 
       if (result.success) {
-        toast.success(`${selectedIds.size} empresas ${bulkAction === 'aprovar' ? 'aprovadas' : 'rejeitadas'}!`);
-        setSelectedIds(new Set());
+        toast.success(`Ação concluída com sucesso!`);
+        setSelectedIds(new Set())
         router.refresh();
       } else {
-        toast.error(result.error || `Erro na ação em lote`);
+        toast.error(result.error || `Erro ao executar ação em massa`);
       }
     } catch (e) {
       toast.error(`Erro inesperado`);
     } finally {
       setIsProcessing(null)
       setBulkAction(null)
+    }
+  }
+
+  const handleResetSenha = async (empresaId: string) => {
+    setIsProcessing(empresaId)
+    try {
+      const result = await resetarSenhaAluno(empresaId);
+      if (result.success && result.credentials) {
+        setCredentialsModal(result.credentials);
+        toast.success("Senha resetada com sucesso!");
+      } else {
+        toast.error(result.error || "Erro ao resetar senha.");
+      }
+    } catch (e) {
+      toast.error("Erro inesperado ao resetar senha.");
+    } finally {
+      setIsProcessing(null)
     }
   }
 
@@ -172,6 +191,24 @@ export function AdminEmpresasTable({
     <div className="space-y-6">
       <Toaster position="top-right" />
       
+      {/* Credentials Modal */}
+      {credentialsModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-surface rounded-xl max-w-md w-full p-6 shadow-xl border border-border">
+            <h3 className="text-xl font-bold mb-4 text-primary">Nova Senha Gerada</h3>
+            <p className="text-sm text-text-secondary mb-4">Repasse os seguintes dados para o aluno:</p>
+            <div className="bg-app-bg p-4 rounded border border-border mb-6">
+              <p><strong>Usuário:</strong> {credentialsModal.username}</p>
+              <p><strong>Nova Senha:</strong> {credentialsModal.password}</p>
+              <p><strong>Link:</strong> https://elovagas.com/login</p>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={() => setCredentialsModal(null)}>Fechar</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
@@ -341,6 +378,15 @@ export function AdminEmpresasTable({
                         <Edit size={18} className="text-text-secondary" />
                       </Button>
                     </Link>
+                    {emp.criadoPor && (
+                      <Button 
+                        variant="ghost" size="icon" 
+                        onClick={() => handleResetSenha(emp.id)}
+                        disabled={!!isProcessing} title={`Resetar senha do aluno ${emp.criadoPor.nome}`}
+                      >
+                        <Key size={18} className="text-warning" />
+                      </Button>
+                    )}
                     <Button 
                       variant="ghost" size="icon" 
                       onClick={() => setDeleteId(emp.id)}

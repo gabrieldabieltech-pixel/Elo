@@ -66,7 +66,7 @@ export default async function AdminDashboardPage({
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-[family-name:var(--font-display)] font-semibold text-text-primary">
             Gestão de Empresas
@@ -75,7 +75,17 @@ export default async function AdminDashboardPage({
             Aprove, edite ou remova cadastros recebidos no portal.
           </p>
         </div>
-        <ConfigTelefone telefoneInicial={telefoneInicial} />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <a
+            href="https://wa.me/?text=Olá!%20Acesse%20este%20link%20para%20cadastrar%20sua%20empresa%20e%20criar%20seu%20acesso%20no%20sistema%20Elo:%20https://elovagas.com/cadastro-aluno"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm h-9 px-3 text-sm rounded-md"
+          >
+            Enviar Link WhatsApp
+          </a>
+          <ConfigTelefone telefoneInicial={telefoneInicial} />
+        </div>
       </div>
 
       <AdminEmpresasTable 
