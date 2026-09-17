@@ -18,7 +18,7 @@ export function ConfigTelefone({ telefoneInicial }: { telefoneInicial: string })
   };
 
   if (!open) {
-    return <Button variant="outline" size="sm" onClick={() => setOpen(true)}>⚙️ Configurar Alertas Zap</Button>;
+    return <Button variant="outline" size="sm" onClick={() => setOpen(true)}>🔔 Ativar Notificações Zap (Aprovações)</Button>;
   }
 
   return (

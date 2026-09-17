@@ -6,7 +6,7 @@ export async function sendAdminNotification(studentName: string, companyName: st
     return;
   }
 
-  const message = `🔔 *Novo Cadastro Pendente*\n\n*Aluno:* ${studentName}\n*Empresa:* ${companyName}\n*Contato:* ${contactPhone}\n\nAcesse o painel para aprovar: https://elo-nexo-loc.vercel.app/admin/empresas`;
+  const message = `🚨 *Novo Cadastro Pendente*\n\n*Aluno:* ${studentName}\n*Empresa:* ${companyName}\n*Contato:* ${contactPhone}\n\nAcesse o painel para aprovar o aluno e a empresa: https://elovagas.com/admin`;
 
   try {
     const res = await fetch(n8nWebhookUrl, {
