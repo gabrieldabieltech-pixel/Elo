@@ -23,9 +23,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "Elo | Conexão direta com quem trabalha",
-  description:
-    "Diretório de empresas que contratam trabalhadores de obra. Busque por função e envie seu currículo direto.",
-  manifest: "/manifest.ts",
+  description: "Diretório de empresas que contratam trabalhadores de obra. Busque por função e envie seu currículo direto.",
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
