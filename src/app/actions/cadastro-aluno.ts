@@ -40,52 +40,57 @@ export async function checkEmpresaBloqueada(nome: string) {
 }
 
 export async function submitAutocadastro(dadosAluno: any, dadosEmpresa: any) {
-  const alunoNomeFormatado = dadosAluno.nome.trim();
-  const usernameDesejado = dadosAluno.username.trim().toLowerCase();
-  const empresaNomeFormatado = dadosEmpresa.nome.trim();
+  try {
+    const alunoNomeFormatado = dadosAluno.nome.trim();
+    const usernameDesejado = dadosAluno.username.trim().toLowerCase();
+    const empresaNomeFormatado = dadosEmpresa.nome.trim();
 
-  if (await verificarUsername(usernameDesejado)) {
-    return { error: "Nome de usuário já está em uso." };
-  }
+    if (await verificarUsername(usernameDesejado)) {
+      return { error: "Nome de usuário já está em uso." };
+    }
 
-  if (await checkEmpresaBloqueada(empresaNomeFormatado)) {
-    return { error: "Essa empresa já foi cadastrada por outro colega. Escolha outra empresa." };
-  }
+    if (await checkEmpresaBloqueada(empresaNomeFormatado)) {
+      return { error: "Essa empresa já foi cadastrada por outro colega. Escolha outra empresa." };
+    }
 
-  const password = dadosAluno.senha || Math.floor(100000 + Math.random() * 900000).toString();
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const password = dadosAluno.senha || Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await prisma.user.create({
-    data: {
-      nome: alunoNomeFormatado,
-      email: `${usernameDesejado}@elo.com`,
-      username: usernameDesejado,
-      senha: hashedPassword,
-      senhaAberta: password,
-      role: "ALUNO",
-      empresas: {
-        create: {
-          nome: empresaNomeFormatado,
-          endereco: dadosEmpresa.endereco,
-          cidade: dadosEmpresa.cidade,
-          estado: dadosEmpresa.estado,
-          whatsapp: dadosEmpresa.whatsapp,
-          telefone: dadosEmpresa.telefone,
-          email: dadosEmpresa.email,
-          status: "PENDENTE",
+    const newUser = await prisma.user.create({
+      data: {
+        nome: alunoNomeFormatado,
+        email: `${usernameDesejado}@elo.com`,
+        username: usernameDesejado,
+        senha: hashedPassword,
+        senhaAberta: password,
+        role: "ALUNO",
+        empresas: {
+          create: {
+            nome: empresaNomeFormatado,
+            endereco: dadosEmpresa.endereco || "",
+            cidade: dadosEmpresa.cidade,
+            estado: dadosEmpresa.estado,
+            whatsapp: dadosEmpresa.whatsapp || "",
+            telefone: dadosEmpresa.telefone || "",
+            email: dadosEmpresa.email || "",
+            status: "PENDENTE",
+          }
         }
-      }
-    },
-    include: { empresas: true }
-  });
+      },
+      include: { empresas: true }
+    });
 
-  let adminPhone = "5511999999999";
-  const config = await prisma.appConfig.findUnique({ where: { key: "ADMIN_PHONE" } });
-  if (config) {
-    adminPhone = config.value;
+    let adminPhone = "5511999999999";
+    const config = await prisma.appConfig.findUnique({ where: { key: "ADMIN_PHONE" } });
+    if (config) {
+      adminPhone = config.value;
+    }
+    
+    await sendAdminNotification(alunoNomeFormatado, empresaNomeFormatado, dadosEmpresa.whatsapp || dadosEmpresa.telefone || "", adminPhone);
+
+    return { success: true, credentials: { username: usernameDesejado, password } };
+  } catch (error: any) {
+    console.error("Erro no submitAutocadastro:", error);
+    return { error: `Falha interna no servidor: ${error.message}` };
   }
-  
-  await sendAdminNotification(alunoNomeFormatado, empresaNomeFormatado, dadosEmpresa.whatsapp || dadosEmpresa.telefone || "", adminPhone);
-
-  return { success: true, credentials: { username: usernameDesejado, password } };
 }
