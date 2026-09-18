@@ -68,11 +68,13 @@ export default async function HomePage({
                   + Nova Empresa
                 </Button>
               </Link>
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" className="flex min-h-[44px]">
-                  Painel
-                </Button>
-              </Link>
+              {(session as any)?.user?.role === "ADMIN" && (
+                <Link href="/admin">
+                  <Button variant="ghost" size="sm" className="flex min-h-[44px]">
+                    Painel
+                  </Button>
+                </Link>
+              )}
             </>
           )}
         </div>
@@ -113,6 +115,31 @@ export default async function HomePage({
                 </Button>
               </Link>
             </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  // Verificar se o aluno está aprovado
+  const dbUser = await prisma.user.findUnique({ where: { id: (session as any).user.id } })
+
+  if (dbUser?.role === "ALUNO" && dbUser.status !== "APROVADO") {
+    return (
+      <main className="min-h-screen bg-app-bg flex flex-col">
+        {renderHeader(true)}
+        <div className="flex-1 flex flex-col items-center justify-center py-20 px-6 text-center">
+          <div className="max-w-xl mx-auto space-y-6 bg-surface p-8 rounded-xl shadow-sm border border-border">
+            <h1 className="text-2xl font-bold text-primary">Conta em Análise</h1>
+            <p className="text-text-secondary">
+              Seu cadastro foi recebido com sucesso, mas a sua conta de aluno ainda está aguardando aprovação da administração.
+            </p>
+            <p className="text-text-secondary">
+              Por favor, aguarde o aviso do administrador para acessar o painel de vagas.
+            </p>
+            <Link href="/api/auth/signout">
+              <Button variant="outline" className="mt-4">Sair</Button>
+            </Link>
           </div>
         </div>
       </main>
