@@ -32,7 +32,7 @@ export function InstallPWA() {
     }
 
     const handleBeforeInstallPrompt = (e: any) => {
-      e.preventDefault()
+      // Do not prevent default so Chrome shows its native mini-infobar automatically!
       setDeferredPrompt(e)
     }
 
