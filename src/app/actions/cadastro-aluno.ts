@@ -75,6 +75,9 @@ export async function submitAutocadastro(dadosAluno: any, dadosEmpresa: any) {
             whatsapp: dadosEmpresa.whatsapp || "",
             telefone: dadosEmpresa.telefone || "",
             email: dadosEmpresa.email || "",
+            contatoNome: dadosEmpresa.contatoNome || null,
+            contatoCargo: dadosEmpresa.contatoCargo || null,
+            contatoEmail: dadosEmpresa.contatoEmail || null,
             status: "PENDENTE",
           }
         }

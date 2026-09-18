@@ -45,19 +45,26 @@ export function ExportPdfButton({
           emp.email ? `Email: ${emp.email}` : null
         ].filter(Boolean).join('\n')
 
+        const responsavel = [
+          emp.contatoNome ? `Nome: ${emp.contatoNome}` : null,
+          emp.contatoCargo ? `Cargo: ${emp.contatoCargo}` : null,
+          emp.contatoEmail ? `Email: ${emp.contatoEmail}` : null
+        ].filter(Boolean).join('\n')
+
         const funcoesStr = emp.funcoes.map((f: any) => f.nome).join(', ')
 
         return [
           emp.nome,
           `${emp.cidade} - ${emp.estado}`,
           funcoesStr,
-          contatos
+          contatos,
+          responsavel || '-'
         ]
       })
 
       autoTable(doc, {
         startY: 35,
-        head: [['Empresa', 'Localização', 'Vagas / Funções', 'Contatos']],
+        head: [['Empresa', 'Localização', 'Vagas / Funções', 'Contatos (Empresa)', 'Pessoa de Contato']],
         body: tableData,
         theme: 'grid',
         headStyles: { 
@@ -67,10 +74,11 @@ export function ExportPdfButton({
         },
         styles: { fontSize: 9, cellPadding: 4, textColor: [32, 33, 31] },
         columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 40 },
-          1: { cellWidth: 40 },
-          2: { cellWidth: 50 },
-          3: { cellWidth: 'auto' }
+          0: { fontStyle: 'bold', cellWidth: 35 },
+          1: { cellWidth: 30 },
+          2: { cellWidth: 40 },
+          3: { cellWidth: 40 },
+          4: { cellWidth: 'auto' }
         },
         didDrawPage: function (data) {
           // Footer

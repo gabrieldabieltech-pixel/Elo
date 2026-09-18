@@ -44,6 +44,9 @@ model Empresa {
   whatsapp     String?
   email        String?
   telefone     String?
+  contatoNome  String?
+  contatoCargo String?
+  contatoEmail String?
   funcoes      Funcao[]
   status       StatusCadastro @default(PENDENTE)
   criadoPorId  String?

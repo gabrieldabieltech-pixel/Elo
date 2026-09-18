@@ -11,6 +11,9 @@ type Empresa = {
   whatsapp: string | null
   email: string | null
   telefone: string | null
+  contatoNome: string | null
+  contatoCargo: string | null
+  contatoEmail: string | null
   funcoes: { nome: string }[]
   criadoPor?: { nome: string } | null
 }
@@ -47,6 +50,19 @@ export function CompanyCard({ empresa }: { empresa: Empresa }) {
             ))}
           </div>
         </div>
+
+        {empresa.contatoNome && (
+          <div className="mb-4 bg-surface-muted p-3 rounded-lg border border-border text-sm">
+            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Pessoa de Contato</p>
+            <p className="font-medium text-text-primary">{empresa.contatoNome}</p>
+            {empresa.contatoCargo && <p className="text-text-secondary">{empresa.contatoCargo}</p>}
+            {empresa.contatoEmail && (
+              <a href={`mailto:${empresa.contatoEmail}`} className="text-primary hover:underline mt-1 inline-block">
+                {empresa.contatoEmail}
+              </a>
+            )}
+          </div>
+        )}
 
         <div className="border-t border-border pt-4 mt-auto space-y-3">
           {empresa.whatsapp && (
