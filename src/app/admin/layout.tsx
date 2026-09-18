@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { LogOut, Home, Building } from "lucide-react";
 import { ReactNode } from "react";
+import { InstallPWA } from "@/components/public/InstallPWA";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             <Home size={18} />
             Página Inicial
           </Link>
+          <div className="px-3 py-2">
+            <InstallPWA />
+          </div>
           <Link 
             href="/api/auth/signout"
             className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-danger hover:bg-danger-soft transition-colors mt-1"

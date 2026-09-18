@@ -52,7 +52,7 @@ export async function submitAutocadastro(dadosAluno: any, dadosEmpresa: any) {
     return { error: "Essa empresa já foi cadastrada por outro colega. Escolha outra empresa." };
   }
 
-  const password = Math.floor(100000 + Math.random() * 900000).toString();
+  const password = dadosAluno.senha || Math.floor(100000 + Math.random() * 900000).toString();
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await prisma.user.create({
@@ -61,6 +61,7 @@ export async function submitAutocadastro(dadosAluno: any, dadosEmpresa: any) {
       email: `${usernameDesejado}@elo.com`,
       username: usernameDesejado,
       senha: hashedPassword,
+      senhaAberta: password,
       role: "ALUNO",
       empresas: {
         create: {

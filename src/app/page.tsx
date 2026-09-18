@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma"
 import { SearchForm } from "@/components/public/SearchForm"
 import { CompanyCard } from "@/components/public/CompanyCard"
 import { ExportPdfButton } from "@/components/public/ExportPdfButton"
+import { InstallPWA } from "@/components/public/InstallPWA"
 import { Button } from "@/components/ui/Button"
 import { sortFuncoes } from "@/lib/utils"
 
@@ -46,6 +47,7 @@ export default async function HomePage({
           </div>
         </Link>
         <div className="flex gap-2 sm:gap-4">
+          <InstallPWA />
           {!isLogged ? (
             <>
               <Link href="/login">
@@ -122,6 +124,7 @@ export default async function HomePage({
   const funcaoId = params.funcaoId as string
   const cidade = params.cidade as string
   const estado = params.estado as string
+  const q = params.q as string
 
   const where: any = {
     status: "APROVADO",
@@ -136,6 +139,9 @@ export default async function HomePage({
   }
   if (estado) {
     where.estado = estado
+  }
+  if (q) {
+    where.nome = { contains: q, mode: "insensitive" }
   }
 
   const cidadesDistintasRaw = await prisma.empresa.findMany({

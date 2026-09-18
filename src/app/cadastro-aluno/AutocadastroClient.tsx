@@ -6,16 +6,24 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import Link from "next/link";
+import { RefreshCw } from "lucide-react";
 
 export default function AutocadastroClient() {
   const [step, setStep] = useState(0);
-  const [aluno, setAluno] = useState({ nome: "", username: "" });
+  const [aluno, setAluno] = useState({ nome: "", username: "", senha: "" });
   const [empresa, setEmpresa] = useState({ nome: "", endereco: "", cidade: "", estado: "", whatsapp: "", telefone: "", email: "" });
   const [credentials, setCredentials] = useState<{username: string, password: string} | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [usernameError, setUsernameError] = useState("");
   
+  const generateRandomPassword = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
+    let pass = "";
+    for (let i = 0; i < 8; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    setAluno(prev => ({ ...prev, senha: pass }));
+  };
+
   useEffect(() => {
     const draft = localStorage.getItem("elo_cadastro_draft");
     if (draft && step === 0) {
@@ -26,9 +34,11 @@ export default function AutocadastroClient() {
         setStep(1);
       } else {
         localStorage.removeItem("elo_cadastro_draft");
+        generateRandomPassword();
         setStep(1);
       }
     } else if (step === 0) {
+      generateRandomPassword();
       setStep(1);
     }
   }, [step]);
@@ -46,7 +56,7 @@ export default function AutocadastroClient() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!aluno.nome.trim() || !aluno.username.trim()) {
+    if (!aluno.nome.trim() || !aluno.username.trim() || !aluno.senha.trim()) {
       setError("Preencha seus dados.");
       return;
     }
@@ -99,6 +109,16 @@ export default function AutocadastroClient() {
                 <Input required value={aluno.username} onBlur={handleUsernameBlur} onChange={e => { setAluno({...aluno, username: e.target.value}); saveDraft({...aluno, username: e.target.value}, empresa); }} placeholder="joaosilva" />
                 {usernameError && <p className="text-danger text-xs mt-1">{usernameError}</p>}
                 <p className="text-xs text-text-secondary mt-1">Este será seu login para acessar o sistema.</p>
+              </div>
+              <div>
+                <Label>Senha *</Label>
+                <div className="flex gap-2">
+                  <Input required type="text" value={aluno.senha} onChange={e => { setAluno({...aluno, senha: e.target.value}); saveDraft({...aluno, senha: e.target.value}, empresa); }} placeholder="Sua senha" />
+                  <Button type="button" variant="outline" size="icon" onClick={() => generateRandomPassword()} title="Gerar nova senha" aria-label="Gerar nova senha">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-text-secondary mt-1">Gere uma nova ou digite sua senha.</p>
               </div>
             </div>
           </div>

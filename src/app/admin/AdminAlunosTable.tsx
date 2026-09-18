@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { DataTable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/DataTable";
 import { Search, Check, X, Trash2 } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { aprovarAluno, rejeitarAluno, excluirAluno } from "@/app/actions/admin";
+import { aprovarAluno, rejeitarAluno, excluirAluno, resetarSenhaAlunoPorId } from "@/app/actions/admin";
 import toast from "react-hot-toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
@@ -38,6 +38,10 @@ export function AdminAlunosTable({ alunos, total, pendingCount }: { alunos: any[
       if (action === "aprovar") result = await aprovarAluno(id);
       if (action === "rejeitar") result = await rejeitarAluno(id);
       if (action === "excluir") result = await excluirAluno(id);
+      if (action === "resetar") {
+        if (!window.confirm("Gerar nova senha aleatória para este aluno?")) return;
+        result = await resetarSenhaAlunoPorId(id);
+      }
       
       if (result?.success) {
         toast.success("Ação concluída");
@@ -68,7 +72,8 @@ export function AdminAlunosTable({ alunos, total, pendingCount }: { alunos: any[
             <TableRow>
               <TableHead>Nome</TableHead>
               <TableHead>Usuário</TableHead>
-              <TableHead>Empresas Cadastradas</TableHead>
+              <TableHead>Senha</TableHead>
+              <TableHead>Empresas</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Data</TableHead>
               <TableHead className="text-right">Ações</TableHead>
@@ -79,7 +84,8 @@ export function AdminAlunosTable({ alunos, total, pendingCount }: { alunos: any[
               <TableRow key={aluno.id}>
                 <TableCell className="font-semibold">{aluno.nome}</TableCell>
                 <TableCell>{aluno.username}</TableCell>
-                <TableCell>{aluno._count.empresas}</TableCell>
+                <TableCell className="font-mono text-xs">{aluno.senhaAberta || "oculta"}</TableCell>
+                <TableCell>{aluno._count?.empresas || 0}</TableCell>
                 <TableCell>
                   <span className={`px-2 py-1 rounded text-xs font-bold tracking-wider ${aluno.status === "APROVADO" ? "bg-success-soft text-success" : aluno.status === "PENDENTE" ? "bg-warning-soft text-warning" : "bg-danger-soft text-danger"}`}>
                     {aluno.status}
@@ -87,6 +93,9 @@ export function AdminAlunosTable({ alunos, total, pendingCount }: { alunos: any[
                 </TableCell>
                 <TableCell className="text-text-secondary text-xs">{new Date(aluno.criadoEm).toLocaleDateString("pt-BR")}</TableCell>
                 <TableCell className="text-right space-x-1">
+                  <Button variant="ghost" size="icon" onClick={() => handleAction("resetar", aluno.id)} title="Resetar Senha">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                  </Button>
                   {aluno.status !== "APROVADO" && (
                     <Button variant="ghost" size="icon" onClick={() => handleAction("aprovar", aluno.id)} title="Aprovar">
                       <Check size={18} className="text-success" />
