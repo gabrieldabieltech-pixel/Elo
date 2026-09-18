@@ -70,14 +70,20 @@ export default function AutocadastroClient() {
     }
     setLoading(true);
     setError("");
-    const res = await submitAutocadastro(aluno, empresa);
-    if (res.error) {
-      setError(res.error);
-      setLoading(false);
-    } else if (res.success && res.credentials) {
-      setCredentials(res.credentials);
-      localStorage.removeItem("elo_cadastro_draft");
-      setStep(2); // final screen
+    try {
+      const res = await submitAutocadastro(aluno, empresa);
+      if (res.error) {
+        setError(res.error);
+        setLoading(false);
+      } else if (res.success && res.credentials) {
+        setCredentials(res.credentials);
+        localStorage.removeItem("elo_cadastro_draft");
+        setStep(2); // final screen
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.");
       setLoading(false);
     }
   };
