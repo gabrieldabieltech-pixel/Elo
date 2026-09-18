@@ -6,36 +6,34 @@ import { Download, X } from "lucide-react"
 
 export function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
-  const [isInstallable, setIsInstallable] = useState(false)
+  const [isStandalone, setIsStandalone] = useState(true) // assume installed until proven otherwise
   const [showAutoPrompt, setShowAutoPrompt] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
     // Detect iOS
     const ua = window.navigator.userAgent
     const webkit = !!ua.match(/WebKit/i)
     const isIPad = !!ua.match(/iPad/i)
     const isIPhone = !!ua.match(/iPhone/i)
-    const isIOSSafari = isIPad || isIPhone && webkit && !ua.match(/CriOS/i)
+    const isIOSSafari = isIPad || (isIPhone && webkit && !ua.match(/CriOS/i))
+    
+    setIsIOS(isIOSSafari)
 
     // Check if already installed
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone
+    setIsStandalone(standalone)
 
-    if (isIOSSafari && !isStandalone) {
-      setIsIOS(true)
-      if (!localStorage.getItem("elo_pwa_dismissed")) {
-        setShowAutoPrompt(true)
-      }
+    // Auto prompt on first visit if not installed
+    if (!standalone && !localStorage.getItem("elo_pwa_dismissed")) {
+      setShowAutoPrompt(true)
     }
 
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault()
       setDeferredPrompt(e)
-      setIsInstallable(true)
-      
-      if (!localStorage.getItem("elo_pwa_dismissed")) {
-        setShowAutoPrompt(true)
-      }
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
@@ -51,9 +49,12 @@ export function InstallPWA() {
       deferredPrompt.prompt()
       const { outcome } = await deferredPrompt.userChoice
       if (outcome === "accepted") {
-        setIsInstallable(false)
+        setIsStandalone(true)
       }
       setDeferredPrompt(null)
+    } else {
+      // If browser doesn't support the prompt API natively, show our manual instructions modal
+      setShowAutoPrompt(true)
     }
   }
 
@@ -62,19 +63,19 @@ export function InstallPWA() {
     localStorage.setItem("elo_pwa_dismissed", "true")
   }
 
+  if (!isMounted || isStandalone) return null
+
   return (
     <>
-      {(isInstallable || isIOS) && (
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={isIOS ? () => setShowAutoPrompt(true) : handleInstallClick} 
-          className="gap-2 border-primary text-primary hover:bg-primary hover:text-white"
-        >
-          <Download size={16} />
-          Baixar App
-        </Button>
-      )}
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={handleInstallClick} 
+        className="gap-2 border-primary text-primary hover:bg-primary hover:text-white shrink-0"
+      >
+        <Download size={16} />
+        Baixar App
+      </Button>
 
       {showAutoPrompt && (
         <div className="fixed bottom-0 left-0 right-0 p-4 z-50 animate-in slide-in-from-bottom-5">
@@ -88,12 +89,14 @@ export function InstallPWA() {
             <div className="flex-1">
               <h3 className="font-semibold text-text-primary">Instale o App Elo</h3>
               {isIOS ? (
-                <p className="text-sm text-text-secondary mt-1">Para instalar no iOS, toque em <b>Compartilhar</b> na barra do Safari e depois em <b>Adicionar à Tela de Início</b>.</p>
-              ) : (
+                <p className="text-sm text-text-secondary mt-1">Para instalar no iPhone, toque em <b>Compartilhar</b> (ícone quadrado com seta) e depois em <b>Adicionar à Tela de Início</b>.</p>
+              ) : deferredPrompt ? (
                 <p className="text-sm text-text-secondary mt-1">Tenha acesso rápido e fácil direto na sua tela inicial!</p>
+              ) : (
+                <p className="text-sm text-text-secondary mt-1">Toque no menu do navegador (três pontinhos) e selecione <b>Adicionar à tela inicial</b> ou <b>Instalar aplicativo</b>.</p>
               )}
             </div>
-            {!isIOS && (
+            {deferredPrompt && !isIOS && (
               <Button onClick={handleInstallClick} className="w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
                 Instalar
               </Button>
