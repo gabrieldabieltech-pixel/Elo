@@ -14,8 +14,9 @@ type Empresa = {
   contatoNome: string | null
   contatoCargo: string | null
   contatoEmail: string | null
-  funcoes: { nome: string }[]
+  funcoes: ({ nome: string } | string)[]
   criadoPor?: { nome: string } | null
+  status?: string
 }
 
 export function CompanyCard({ empresa }: { empresa: Empresa }) {
@@ -23,9 +24,13 @@ export function CompanyCard({ empresa }: { empresa: Empresa }) {
     ? `https://wa.me/55${empresa.whatsapp.replace(/\D/g, '')}`
     : null;
 
+  // Garantir que as funes sejam strings
+  const funcoesStr = empresa.funcoes.map(f => typeof f === 'string' ? f : f.nome).join(', ')
+  const isPending = empresa.status === "PENDENTE"
+
   return (
-    <Card className="h-full flex flex-col hover:border-primary/50 transition-colors shadow-sm">
-      <CardContent className="p-5 md:p-6 flex-1 flex flex-col">
+    <div className="bg-surface rounded-xl p-5 md:p-6 border border-border shadow-sm flex flex-col h-full transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-primary/30">
+      <div className="flex-1 flex flex-col">
         <h3 className="text-xl font-bold font-[family-name:var(--font-display)] text-text-primary mb-2">
           {empresa.nome}
         </h3>
@@ -89,7 +94,7 @@ export function CompanyCard({ empresa }: { empresa: Empresa }) {
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

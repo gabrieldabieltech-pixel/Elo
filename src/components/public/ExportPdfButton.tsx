@@ -2,8 +2,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/Button"
 import { Download } from "lucide-react"
-import jsPDF from "jspdf"
-import autoTable from "jspdf-autotable"
 import { fetchEmpresasParaPdf } from "@/app/actions/public"
 import { toast } from "react-hot-toast"
 
@@ -19,6 +17,14 @@ export function ExportPdfButton({
   const generatePDF = async () => {
     setIsGenerating(true)
     try {
+      // Lazy load heavy PDF libraries only when the user clicks the button
+      const [jsPDFModule, autoTableModule] = await Promise.all([
+        import("jspdf"),
+        import("jspdf-autotable")
+      ]);
+      const jsPDF = jsPDFModule.default;
+      const autoTable = autoTableModule.default;
+
       const empresas = await fetchEmpresasParaPdf(filtros)
       
       const doc = new jsPDF()
