@@ -11,7 +11,18 @@ import { RefreshCw } from "lucide-react";
 export default function AutocadastroClient() {
   const [step, setStep] = useState(0);
   const [aluno, setAluno] = useState({ nome: "", username: "", senha: "" });
-  const [empresa, setEmpresa] = useState({ nome: "", endereco: "", cidade: "", estado: "", whatsapp: "", telefone: "", email: "" });
+  const [empresa, setEmpresa] = useState({ 
+    nome: "", 
+    endereco: "", 
+    cidade: "", 
+    estado: "", 
+    whatsapp: "", 
+    telefone: "", 
+    email: "",
+    contatoNome: "",
+    contatoCargo: "",
+    contatoEmail: ""
+  });
   const [credentials, setCredentials] = useState<{username: string, password: string} | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -66,6 +77,10 @@ export default function AutocadastroClient() {
     }
     if (!empresa.nome.trim() || !empresa.cidade.trim() || !empresa.estado.trim()) {
       setError("Preencha os dados obrigatórios da empresa.");
+      return;
+    }
+    if (!empresa.contatoNome.trim() || !empresa.contatoCargo.trim() || !empresa.contatoEmail.trim()) {
+      setError("Preencha os dados obrigatórios da pessoa de contato.");
       return;
     }
     setLoading(true);
@@ -163,6 +178,24 @@ export default function AutocadastroClient() {
               <div>
                 <Label>E-mail da Empresa</Label>
                 <Input type="email" value={empresa.email} onChange={e => { setEmpresa({...empresa, email: e.target.value}); saveDraft(aluno, {...empresa, email: e.target.value}); }} />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-surface p-5 rounded-xl border border-border shadow-sm">
+            <h2 className="text-lg mb-4 font-semibold border-b pb-2">Pessoa de Contato</h2>
+            <div className="space-y-4">
+              <div>
+                <Label>Nome do Contato *</Label>
+                <Input required value={empresa.contatoNome} onChange={e => { setEmpresa({...empresa, contatoNome: e.target.value}); saveDraft(aluno, {...empresa, contatoNome: e.target.value}); }} placeholder="Nome completo" />
+              </div>
+              <div>
+                <Label>Cargo *</Label>
+                <Input required value={empresa.contatoCargo} onChange={e => { setEmpresa({...empresa, contatoCargo: e.target.value}); saveDraft(aluno, {...empresa, contatoCargo: e.target.value}); }} placeholder="Ex: Gerente de RH" />
+              </div>
+              <div>
+                <Label>E-mail do Contato *</Label>
+                <Input required type="email" value={empresa.contatoEmail} onChange={e => { setEmpresa({...empresa, contatoEmail: e.target.value}); saveDraft(aluno, {...empresa, contatoEmail: e.target.value}); }} placeholder="email@exemplo.com" />
               </div>
             </div>
           </div>
