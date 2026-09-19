@@ -171,17 +171,15 @@ export default async function HomePage({
     where.nome = { contains: q, mode: "insensitive" }
   }
 
-  const cidadesDistintasRaw = await prisma.empresa.findMany({
-    where: { status: "APROVADO", deletadoEm: null },
-    select: { cidade: true },
-    distinct: ["cidade"],
-    orderBy: { cidade: "asc" }
-  })
-  const cidades = cidadesDistintasRaw.map(c => c.cidade)
-
   const take = 100 // vamos mostrar mais vagas pros logados
 
-  const [funcoesRaw, empresas, totalCount] = await Promise.all([
+  const [cidadesDistintasRaw, funcoesRaw, empresas, totalCount] = await Promise.all([
+    prisma.empresa.findMany({
+      where: { status: "APROVADO", deletadoEm: null },
+      select: { cidade: true },
+      distinct: ["cidade"],
+      orderBy: { cidade: "asc" }
+    }),
     prisma.funcao.findMany(),
     prisma.empresa.findMany({
       where,
@@ -194,6 +192,8 @@ export default async function HomePage({
     }),
     prisma.empresa.count({ where })
   ])
+
+  const cidades = cidadesDistintasRaw.map(c => c.cidade)
 
   const funcoes = sortFuncoes(funcoesRaw)
 

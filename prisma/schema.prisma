@@ -54,6 +54,10 @@ model Empresa {
   criadoEm     DateTime       @default(now())
   atualizadoEm DateTime       @updatedAt
   deletadoEm   DateTime?
+
+  @@index([status, deletadoEm])
+  @@index([cidade, estado])
+  @@index([criadoPorId])
 }
 
 model Funcao {
